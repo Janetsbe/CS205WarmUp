@@ -56,6 +56,6 @@ public class Interface {
 				   String validColors, up to the appropriate character based on difficulty */	
 				if(validColors.substring(0, 6 + difficulty).indexOf(input.charAt(1)) != -1);
 		}
-		return "";
+		return input.toLowerCase();
 	}
 }

@@ -61,7 +61,7 @@ public class GameEngine {
 	* Method is called if player makes selection 1 in main menu. This method will
 	* run the game until the player quits to the main menu.
 	* Instance of Computer object is constructed here.
-	* In: reference to Player
+	* In: reference to Player, Interface
 	* Out: -
 	************************************************************************************/
 	public static void playGame(Player player, Interface gameInterface) {
