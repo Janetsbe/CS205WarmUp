@@ -40,4 +40,22 @@ public class Interface {
 		return true;
 	}
 	
+	public int promptDifficulty() {
+		return 1;
+	}
+	
+	public String promptPlayerMove(Computer computer) {
+		int difficulty = computer.getDifficulty();
+		String validColors = "roygbiv";
+		String input = "rygbo";
+		if(input.length() == 4 || input.length() == 5) {
+			boolean validInput = true;
+			for(int i = 0; i < input.length() && validInput == true; i++)
+				
+				/* A bit messy, this checks if every char in the input string belongs to the 
+				   String validColors, up to the appropriate character based on difficulty */	
+				if(validColors.substring(0, 6 + difficulty).indexOf(input.charAt(1)) != -1);
+		}
+		return "";
+	}
 }
