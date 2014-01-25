@@ -25,10 +25,11 @@ public class GameEngine {
 																		is returned from promptUserName */
 		boolean wantsToPlay = true;
 			
-		/* Main game loop. Branches out to playGame, or to interface
-			executes until boolean value wantsToPlay is set to false */
+		/* Main game loop. Branches out to playGame, or to Interface methods.
+			Executes until boolean value wantsToPlay is set to false */
 		while(wantsToPlay) {
-			gameInterface.showMainMenu();
+			//gameInterface.showMainMenu();
+			
 			int playerSelection = gameInterface.promptMainMenu();
 			
 			if(playerSelection == 1){//player wants to start
@@ -54,6 +55,7 @@ public class GameEngine {
 				System.out.println("Invalid selection. Please select"
 										+ " a valid option from the main menu.");
 		}	
+	gameInterface.showThanksAndBye();
 	}
 	
 	
@@ -78,6 +80,7 @@ public class GameEngine {
 				//gameInterface.showHint(computer.getHint());
 			}
 			else if(playerInput.equalsIgnoreCase("give up")) {
+				if(gameInterface.isSure())
 				//gameInterface.showLose();
 				
 			}

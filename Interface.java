@@ -1,35 +1,71 @@
+import java.util.Scanner;
+
 public class Interface {
 
+
+	private Scanner keyboard;
 	
+	/************************************************************************************ 
+	* Constructor for interface Object.
+	* In: None
+	* Out/post: Scanner keyboard is initialized.
+	************************************************************************************/
+	public Interface() {
+		keyboard = new Scanner(System.in);
+	}
 	
-	public void showMainMenu() {
-	
+	/************************************************************************************ 
+	* Prompt the user for input to make a selection from the main menu.
+	* In: None
+	* Out/post: Returns a valid input for main menu. Error checking is performed to ensure
+					input is an integer. Will prompt until an integer value is entered.
+	************************************************************************************/
+	public String promptMainMenu() {
 		System.out.println("Main menu goes here");
+		String input = keyboard.nextLine();
+		return input;
 	}
 
-
+	/************************************************************************************ 
+	* Outputs the welcome screen to the user. 
+	* In: None
+	* Out/post: The welcome "screen" will have been output to the console.
+	************************************************************************************/
 	public void showWelcomeScreen() {
 		System.out.println("Welcome screen goes here");
+		keyboard.nextLine();
 	}
 	
+	/************************************************************************************ 
+	* Displays a dialog box containing gameplay instructions. Dialog box is used in order
+	* to avoid disrupting gameplay if player wishes to see instructions while playing.
+	* In: None
+	* Out/post: A dialog box showing instructions will have been presented to the user.
+	************************************************************************************/
 	public void showInstructions() {
 		System.out.println("Instructions go here");
+		keyboard.nextLine();
 	}
 	
-	public void showPlayerStats(int[] stats) {
+	
+	/************************************************************************************ 
+	* Shows the player their stats. 
+	* In: None
+	* Out/post: The player will have had their game session stats output to the console.
+	************************************************************************************/
+	public void showPlayerStats(String stats) {
 		System.out.println("Stats go here");
+		keyboard.nextLine();
 	}
 	
 	public String promptUserName() {
-		return "";
+		System.out.println("Please enter your name");
+		String name = keyboard.nextLine();
+		return name;
 	}
 	
 	public void showAbout() {
 		System.out.println("About info goes here");
-	}
-	
-	public int promptMainMenu() {
-	 	return Integer.parseInt("0");
 	}
 	
 	public boolean promptIsSure() {
@@ -54,8 +90,16 @@ public class Interface {
 				
 				/* A bit messy, this checks if every char in the input string belongs to the 
 				   String validColors, up to the appropriate character based on difficulty */	
-				if(validColors.substring(0, 6 + difficulty).indexOf(input.charAt(1)) != -1);
+				if(validColors.substring(0, 6 + difficulty).indexOf(input.charAt(1)) != -1)
+					validInput = false;
+					
 		}
 		return input.toLowerCase();
 	}
 }
+
+	/************************************************************************************ 
+	*
+	* In: 
+	* Out/post: -
+	************************************************************************************/
