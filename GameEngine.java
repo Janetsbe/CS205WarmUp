@@ -18,8 +18,8 @@ public class GameEngine {
 	public static void main(String[] args) {
 		
 		Interface gameInterface = new Interface();
-		gameInterface.showWelcomeScreen();
 		
+		gameInterface.showText("PLACEHOLDER_WELCOME");
 		Player player = new Player(gameInterface.promptUserName()); /*construct player, 	
 																		takes a string argument, which 
 																		is returned from promptUserName */
@@ -36,16 +36,16 @@ public class GameEngine {
 				playGame(player, gameInterface);
 			}
 			else if(playerSelection == 2) { //player wants to see instructions
-				gameInterface.showInstructions();
+				gameInterface.showText("PLACEHOLDER_INSTRUCTIONS");
 			}
 			else if(playerSelection == 3) { //player wants to see gameplay stats
-				gameInterface.showPlayerStats(player.getStats());
+				gameInterface.showText("PLACEHOLDER_STATS");
 			}
 			else if(playerSelection == 4) { //player wants to see the about text
-				gameInterface.showAbout();
+				gameInterface.showText("PLACEHOLDER_ABOUT");
 			}
 			else if(playerSelection == 5) { //Player wants to reset name/profile
-				if(gameInterface.promptIsSure())
+				if(gameInterface.promptRename())
 					player = new Player(gameInterface.promptUserName());
 			}
 			else if(playerSelection == 0) { //Selected 0, prompt to quit first
@@ -53,9 +53,9 @@ public class GameEngine {
 			}
 			else //Invalid selection is made
 				System.out.println("Invalid selection. Please select"
-										+ " a valid option from the main menu.");
+										+ "\na valid option from the main menu.");
 		}	
-	gameInterface.showThanksAndBye();
+	gameInterface.showText("BYE_PLACEHOLDER");
 	}
 	
 	
@@ -74,17 +74,40 @@ public class GameEngine {
 			/* Constructs what is to be the computer "player", passes in the difficulty
 			   to the constructor */
 			Computer computer = new Computer(gameInterface.promptDifficulty());
-			
-			String playerInput = gameInterface.promptPlayerMove(computer);
-			if(playerInput.equalsIgnoreCase("hint")) {
-				//gameInterface.showHint(computer.getHint());
-			}
-			else if(playerInput.equalsIgnoreCase("give up")) {
-				if(gameInterface.isSure())
-				//gameInterface.showLose();
+			boolean isGameDone = false;
+			while(!isGameDone) {
+				String[] testArray = {"red", "orange", "yellow", "green", "blue", "indigo"};
+				String playerInput = gameInterface.promptPlayerMove(testArray);
 				
-			}
-			else if(playerInput.equalsIgnoreCase(""));
+				if(playerInput.equalsIgnoreCase("hint")) {
+					//gameInterface.showHint(computer.getHint());
+					gameInterface.showText("PLACEHOLDER_HINT");
+				}
+				else if(playerInput.equalsIgnoreCase("give up")) {
+					if(gameInterface.promptGiveUp()) {
+						//gameInterface.showLose();
+						isGameDone = true;
+						gameInterface.showText("PLACEHOLDER_LOSE");
+						if(!gameInterface.promptPlayAgain()) {
+							isPlaying = false;
+						}
+						
+						
+					}
+				}
+				else if(playerInput.equalsIgnoreCase("instructions")) {
+					gameInterface.showText("PLACEHOLDER_INSTRUCTIONS");
+				}
+				else {
+					//if(computer.scoreMove(input)) {
+						//gameInterface("PLACEHOLDER_WIN");
+					}
+				}
+				
+				/*if(computer.getTurnsLeft() <= 0) {
+					gameInterface.showText("PLACEHOLDER_LOSE");
+					isGameDone = true;
+				}*/
 		}
 		
 	}
