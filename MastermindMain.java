@@ -24,7 +24,7 @@ public class MastermindMain {
 		
 		Interface gameInterface = new Interface();
 		
-		gameInterface.showText(GameText.getWelcome());
+		gameInterface.showText("WELCOME_PH");
 		
 		Player player = new Player(gameInterface.promptUserName()); /*construct player, 	
 																		takes a string argument, which 
@@ -35,19 +35,20 @@ public class MastermindMain {
 		boolean wantsToPlay = true;
 		while(wantsToPlay) {
 						
-			int playerSelection = gameInterface.promptMainMenu(GameText.getMainMenu());
+			int playerSelection = gameInterface.promptMainMenu("MAIN_MENU_PH_123450");
 			
 			if(playerSelection == PLAY){//player wants to start a game
 				playGame(player, gameInterface);
 			}
 			else if(playerSelection == INSTRUCTIONS) { //player wants to see instructions
-				gameInterface.showInstructions(GameText.getInstructions());
+				String[] instructionsPlaceholder = {"INSTRUCTIONS", "PH"};
+				gameInterface.showInstructions(instructionsPlaceholder);
 			}
 			else if(playerSelection == STATS) { //player wants to see gameplay stats
-				gameInterface.showText(GameText.getStats(player));
+				gameInterface.showText("STATS_PH");
 			}
 			else if(playerSelection == ABOUT) { //player wants to see the about text
-				gameInterface.showText(GameText.getAbout());
+				gameInterface.showText("ABOUT_PH");
 			}
 			else if(playerSelection == RESET_PLAYER) { //Player wants to reset name/profile
 				if(gameInterface.confirmRename())
@@ -59,7 +60,7 @@ public class MastermindMain {
 			else //Invalid selection is made
 				gameInterface.showText("Invalid Selection. Please select a valid option from the menu.");
 		}//while	
-	gameInterface.showText(GameText.getBye());
+	gameInterface.showText("BYE_PH");
 	}//main
 	
 	
@@ -81,32 +82,33 @@ public class MastermindMain {
 			boolean isGameDone = false;
 			while(!isGameDone) {
 				//Player is asked for a move. Function can only return 4 things.
-				String playerInput = gameInterface.promptPlayerMove(computer.getValidColors(),
-																					GameText.getMoveOptions());
+				
+				String input = gameInterface.promptPlayerMove(computer.getTrueValidColors(),
+																					"MOVEOPTIONS_PH");
 				
 				//start of if branching depending on player's move. Exhaustive.
-				if(playerInput.equalsIgnoreCase("hint")) {
-					gameInterface.showHint(computer.getHint());
+				if(input.equalsIgnoreCase("hint")) {
+					gameInterface.showText("HINT_PH");
+					//gameInterface.showHint(computer.getHint());
 				}//if
-				else if(playerInput.equalsIgnoreCase("give up")) {
-					if(gameInterface.promptGiveUp()) {
-						isGameDone = true;
-						gameInterface.showText(GameText.getLoseScreen());
-						gameInterface.showText("The solution was: " + computer.getSolution());
-						isPlaying = gameInterface.promptPlayAgain();
-					}//if
+				else if(input.equalsIgnoreCase("give up")
+												 && gameInterface.promptGiveUp()) {	 
+					isGameDone = true;
+					gameInterface.showText("LOSE_PH");
+					gameInterface.showText("The solution was: " + computer.getPegOrder());
+					isPlaying = gameInterface.promptPlayAgain();
 				}//else if
-				else if(playerInput.equalsIgnoreCase("instructions")) {
-					gameInterface.showText(GameText.getInstructions);
+				else if(input.equalsIgnoreCase("instructions")) {
+					gameInterface.showText("INSTRUCTIONS_PH");
 				}//else if
 				else { //falls to here if the user input was a guess.
-					if(computer.scoreMove(input)) { //score move returns true if win.
-						gameInterface.showText(computer.getBoard());
+					if(computer.scoreGuess(input)) { //win
+						//gameInterface.showText(computer.getBoard());
 						gameInterface.showText("PLACEHOLDER_WIN");
-						player.updateStats(1, computer.getTurns(), computer.getDifficulty());
+						player.updateStats(1, computer.getTurnsUsed(), computer.getDifficulty());
 					}//if
 					else {//goes to here if the guess is not a win.
-						if(computer.getTurns() >= 10) { // Lose
+						if(computer.getTurnsUsed() >= 10) { // Lose
 						}//if
 					}//else	
 				}//else

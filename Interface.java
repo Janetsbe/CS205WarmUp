@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class Interface {
 
-
 	private Scanner keyboard; //Used for user input
 	
 	
@@ -22,10 +21,13 @@ public class Interface {
 	* Out/post: Returns a valid input for main menu. Error checking is performed to ensure
 					input is an integer. Will prompt until an integer value is entered.
 	************************************************************************************/
-	public int promptMainMenu() {
-		System.out.println("Main menu goes here");
+	public int promptMainMenu(String mainMenu) {
+		System.out.println(mainMenu);
 		String input = keyboard.nextLine();
-		while(input.length() > 1 && !isNumerical(input)) {
+
+		System.out.println(input.length());		
+
+		while(!isNumerical(input)) {
 			//System.out.println(gameData.getMainMenu);
 			System.out.println("Please select a valid option from the menu.");
 			
@@ -39,9 +41,12 @@ public class Interface {
 	* In: a String consisting of any type of character.
 	* Out/post: Returns a boolean representing whether the input String is numerical
 	************************************************************************************/
-	public boolean isNumerical(String String) {
-		for(int i = 0; i < String.length(); i++) {
-			if(!(Character.isDigit(String.charAt(i)))) { /*checks if the character at i is
+	public boolean isNumerical(String string) {
+		if(string.equals("")) { //checks for an empty string
+			return false;
+		}
+		for(int i = 0; i < string.length(); i++) {
+			if(!(Character.isDigit(string.charAt(i)))) { /*checks if the character at i is
 																		  not a digit.*/
 				return false; /*a non-numerical character was found, the whole String is
 									 considered non-numerical*/
@@ -60,11 +65,6 @@ public class Interface {
 	public void showText(String text) {
 		System.out.println(text + "\nPress enter to continue.");
 		keyboard.nextLine();
-	}
-		
-	
-	public boolean promptPlayAgain() {
-		return promptConfirmNeeded("Do you wish you play again?");
 	}
 		
 	/************************************************************************************ 
@@ -92,9 +92,9 @@ public class Interface {
    * as is indicated by console output.
 	* In: String representing the question needing confirmation.
 	* Out/post: User is asked if they are sure and is given the valid responses. 
-	* `			Returns a boolean, true if user says yes, false if no/
+	* `			Returns a boolean, true if user says yes, false if no.
 	************************************************************************************/
-	public boolean promptConfirmNeeded(String string) {
+	public boolean isSure(String string) {
 		String input;
 		do {
 			System.out.println(string + " (y)es/(n)o");
@@ -103,23 +103,28 @@ public class Interface {
 		return input.equals("y");
 	}
 	
-	public boolean promptRename() {
-		return promptConfirmNeeded("New player?"
-											+ "WARNING: This will reset your stats!");
+	public boolean confirmRename() {
+		return isSure("New player?\n"
+							+ "WARNING: This will reset your stats!");
 	}
 	
 	public boolean promptGiveUp() {
-		return promptConfirmNeeded("Do you wish to forfeit the game?");
+		return isSure("Do you wish to forfeit the game?");
+	}
+	
+	
+	public boolean promptPlayAgain() {
+		return isSure("Do you wish you play again?");
 	}
 	
 	/************************************************************************************ 
 	* Asks the user if they would like to quit.
 	* In: None
 	* Out/post: User is asked if they want to exit.
-					Returns a boolean equal to return from promptIsSure().
+					Returns a boolean equal to return from isSure().
 	************************************************************************************/
 	public boolean promptWantsToQuit() {
-		return promptConfirmNeeded("Exit the game?");
+		return isSure("Exit the game?");
 	}
 	
 
@@ -141,7 +146,7 @@ public class Interface {
 		return Integer.parseInt(input) - 1;
 	}
 	
-	public String promptPlayerMove(String[] colors) {
+	public String promptPlayerMove(String[] colors, String moveOptions) {
 	/************************************************************************************ 
 	* Prompt the user for a move during gameplay. Valid responses by the user are:
 			i:   A sequence of 4-5 characters corresponding to the 6-7 valid colors.
@@ -149,23 +154,22 @@ public class Interface {
 			ii:  "instructions"
 			iii: "hint"
 			iv:  "give up"
-	  Validity of input is checked here, array of valid colors is passed in.
+	  Validity of input is checked here (within isMoveValid()), array of valid colors
+	  is passed in.
 	* In: an array of strings representing which colors are valid for the difficulty
 			of the current game.
 	* Out/post: Returns a string which represents the player's move for their current turn.
 	************************************************************************************/
-		//System.out.println(gameData.getPlayerMoveOptions);
-		System.out.println("PLACEHOLDER_MOVE_HINT_INSTRUCTIONS_GIVEUP_GUESS");
-		String input = keyboard.nextLine().toLowerCase();
+		System.out.println(moveOptions);
+		String input = keyboard.nextLine().toUpperCase();
 		while(!(isMoveValid(input, colors))) {
 			showText("Invalid move!");
-			System.out.println("PLACEHOLDER_MOVE_HINT_INSTRUCTIONS_GIVEUP_GUESS");
-			input = keyboard.nextLine().toLowerCase();		
+			System.out.println(moveOptions);
+			input = keyboard.nextLine().toUpperCase();		
 		}
 		return input;
 	}
 	
-
 	/************************************************************************************ 
 	* Verifies that a player's move is valid. That is, it must be either a valid string
 	* of 4-5 characters from roygbi(v), or one of "hint", "instructions", "give up".
@@ -182,9 +186,7 @@ public class Interface {
 																			to the stringBuffer */
 		}
 		String validColors = colorsFirstChars.toString();
-		
-		
-		
+		System.out.println(validColors);
 		//Checks for the three non-guess options.
 		if(move.equals("give up") || move.equals("hint") 
 											 || move.equals("instructions")) {
@@ -192,18 +194,31 @@ public class Interface {
 		}
 		
 		//Checks for validity of potential guess input.
-		if(move.length() != colors.length)
+		if(move.length() != colors.length - 2) //6 colors => 4 pegs, 7 => 5
 			return false; //String is incorrect length to be a guess.
 			
 		for(int i = 0; i < move.length(); i++) {
 		 	if(validColors.indexOf(move.charAt(i)) == -1) /*Checks if all chars in 
 																move are contained in validColors */
-				return false;
+				return false; //a char was found which doesn't correspond to a valid color.
 		}
 		
 		return true; //falls to here if input is a valid guess.
 			
 	}
+
+
+	public void showInstructions(String[] instructions) {
+		for(int i = 0; i < instructions.length; i++) {
+			showText(instructions[i]);
+		}	
+	}
+	
+	
+	public void pushUp() {
+		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	}
+	
 }
 	/************************************************************************************ 
 	*
