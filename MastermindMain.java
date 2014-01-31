@@ -24,35 +24,34 @@ public class MastermindMain {
 		
 		Interface gameInterface = new Interface();
 		
-		gameInterface.showText("WELCOME_PH");
-		
-		Player player = new Player(gameInterface.promptUserName()); /*construct player, 	
-																		takes a string argument, which 
-																		is returned from promptUserName */
+		gameInterface.showText(GameText.getWelcome());
+		gameInterface.pushUp();
+
+  	   //construct player, takes a string argument, which is returned from promptUserName()
+		Player player = new Player(gameInterface.promptUserName(GameText.getPlayerNaming())); 
 			
 		/* Main game loop. Branches out to playGame, or to Interface methods.
 			Executes until boolean value wantsToPlay is set to false */
 		boolean wantsToPlay = true;
 		while(wantsToPlay) {
-						
-			int playerSelection = gameInterface.promptMainMenu("MAIN_MENU_PH_123450");
-			
+			gameInterface.pushUp();						
+			int playerSelection = gameInterface.promptMainMenu(GameText.getMainMenu());
+			gameInterface.pushUp();	
 			if(playerSelection == PLAY){//player wants to start a game
 				playGame(player, gameInterface);
 			}
 			else if(playerSelection == INSTRUCTIONS) { //player wants to see instructions
-				String[] instructionsPlaceholder = {"INSTRUCTIONS", "PH"};
-				gameInterface.showInstructions(instructionsPlaceholder);
+				gameInterface.showInstructions(GameText.getInstructions());
 			}
 			else if(playerSelection == STATS) { //player wants to see gameplay stats
 				gameInterface.showText("STATS_PH");
 			}
 			else if(playerSelection == ABOUT) { //player wants to see the about text
-				gameInterface.showText("ABOUT_PH");
+				gameInterface.showText(GameText.getAboutScreen());
 			}
 			else if(playerSelection == RESET_PLAYER) { //Player wants to reset name/profile
 				if(gameInterface.confirmRename())
-					player = new Player(gameInterface.promptUserName());
+					player = new Player(gameInterface.promptUserName(GameText.getPlayerNaming()));
 			}
 			else if(playerSelection == EXIT) { //Selected 0, prompt to quit first
 				wantsToPlay = !gameInterface.promptWantsToQuit();
@@ -60,7 +59,7 @@ public class MastermindMain {
 			else //Invalid selection is made
 				gameInterface.showText("Invalid Selection. Please select a valid option from the menu.");
 		}//while	
-	gameInterface.showText("BYE_PH");
+	gameInterface.showText(GameText.getByeScreen());
 	}//main
 	
 	
@@ -75,16 +74,21 @@ public class MastermindMain {
 		
 		boolean isPlaying = true;
 		while(isPlaying) {
-		
+			gameInterface.pushUp();	
 			/* Constructs what is to be the computer "player", passes in the difficulty
 			   to the constructor */
-			Computer computer = new Computer(gameInterface.promptDifficulty());
+			Computer computer = new Computer(gameInterface.promptDifficulty("Select your difficulty level:"
+																		+ "\n(1) Normal - 4 Pegs, 6 Colors"
+																		+ "\n(2) Challenge - 5 Pegs, 7 Colors"));
+
 			boolean isGameDone = false;
 			while(!isGameDone) {
 				//Player is asked for a move. Function can only return 4 things.
-				
-				String input = gameInterface.promptPlayerMove(computer.getTrueValidColors(),
-																					"MOVEOPTIONS_PH");
+			gameInterface.pushUp();	
+			String input = gameInterface.promptPlayerMove(computer.getTrueValidColors(),
+													GameText.askMoveText(computer.getTrueValidColors()),
+													computer.getGameboard());
+				gameInterface.pushUp();
 				
 				//start of if branching depending on player's move. Exhaustive.
 				if(input.equalsIgnoreCase("hint")) {
@@ -94,30 +98,30 @@ public class MastermindMain {
 				else if(input.equalsIgnoreCase("give up")
 												 && gameInterface.promptGiveUp()) {	 
 					isGameDone = true;
-					gameInterface.showText("LOSE_PH");
+					gameInterface.showText(GameText.getLoseScreen());
 					gameInterface.showText("The solution was: " + computer.getPegOrder());
-					isPlaying = gameInterface.promptPlayAgain();
 				}//else if
 				else if(input.equalsIgnoreCase("instructions")) {
-					gameInterface.showText("INSTRUCTIONS_PH");
+					gameInterface.showInstructions(GameText.getInstructions());
 				}//else if
 				else { //falls to here if the user input was a guess.
 					if(computer.scoreGuess(input)) { //win
-						//gameInterface.showText(computer.getBoard());
-						gameInterface.showText("PLACEHOLDER_WIN");
+						gameInterface.showText(computer.getGameboard());
+						gameInterface.showText(GameText.getWinScreen());
 						player.updateStats(1, computer.getTurnsUsed(), computer.getDifficulty());
+						isGameDone = true;
 					}//if
 					else {//goes to here if the guess is not a win.
 						if(computer.getTurnsUsed() >= 10) { // Lose
+							
+							gameInterface.showText(GameText.getLoseScreen());
+							gameInterface.showText("The solution was: " + computer.getPegOrder());
+							isGameDone = true;
 						}//if
 					}//else	
 				}//else
-				
-				/*if(computer.getTurnsLeft() <= 0) {
-					gameInterface.showText("PLACEHOLDER_LOSE");
-					isGameDone = true;
-				}*/
 			}//while
+			isPlaying = gameInterface.promptPlayAgain();
 		}//while
 	}//playGame()
 }

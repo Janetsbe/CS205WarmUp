@@ -14,21 +14,20 @@ class Computer {
 	
 	public Computer(int d){
 		difficulty = d;
-		pegOrder = calcPegOrder();
+		pegOrder = "";
+		calcPegOrder();
 		feedback = "";
-		pegOrder = "";	
+		gameboard = GameText.getGameBoard(d);
 	}
 	
 	//Generates the answer to the game
-	public String calcPegOrder(){
+	public void calcPegOrder(){
 		int num = 4 + difficulty;
 		
 		for (int i = 0; i < num; i++){
 			int randNum = (int)(Math.random()*(num+2));
-			pegOrder += abbrColors[randNum];
+			this.pegOrder += abbrColors[randNum];
 		}
-		
-		return pegOrder;	
 	}
 
 	public void setTurnsUsed(int t){
@@ -51,8 +50,8 @@ class Computer {
 	public int getTurnsUsed(){
 		return turnsUsed;
 	}	
-	public StringBuffer getMiddleGameboard(){
-		return gameboard;
+	public String getGameboard(){
+		return gameboard.toString();
 	}
 	
 	public String[] strToStrArray(String s){
@@ -65,6 +64,7 @@ class Computer {
 	
 	public boolean scoreGuess(String userGuess){
 		boolean check = true;
+		feedback = "";
 		String zeros = "";
 		ArrayList<String> rightPegs = new ArrayList<String>();
 		ArrayList<String> wrongPegs = new ArrayList<String>();
@@ -78,6 +78,7 @@ class Computer {
 				check = false;
 				wrongPegs.add(guessArray[i]);
 				key.add(pegOrderArray[i]);
+				System.out.println("check was set to false");
 			}
 			else {
 				rightPegs.add(guessArray[i]);
@@ -105,6 +106,7 @@ class Computer {
 		
 		currPegOrder = guessArray;
 		turnsUsed++; // 3.
+		System.out.println(userGuess + " + " + feedback);
 		gameboard = GameText.setGameBoard(turnsUsed, userGuess, feedback, check, gameboard);
 		return check; // 5.
 		

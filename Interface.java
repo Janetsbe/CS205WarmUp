@@ -23,15 +23,12 @@ public class Interface {
 	************************************************************************************/
 	public int promptMainMenu(String mainMenu) {
 		System.out.println(mainMenu);
-		String input = keyboard.nextLine();
-
-		System.out.println(input.length());		
+		String input = userInput();
 
 		while(!isNumerical(input)) {
-			//System.out.println(gameData.getMainMenu);
-			System.out.println("Please select a valid option from the menu.");
-			
-			input = keyboard.nextLine();
+			showText("Please select a valid option from the menu.");
+			System.out.println(mainMenu);
+			input = userInput();
 		}
 		return Integer.parseInt(input);
 	}
@@ -64,7 +61,7 @@ public class Interface {
 	************************************************************************************/
 	public void showText(String text) {
 		System.out.println(text + "\nPress enter to continue.");
-		keyboard.nextLine();
+		userInput();
 	}
 		
 	/************************************************************************************ 
@@ -75,13 +72,14 @@ public class Interface {
 	* Out/post: Console displays to user what is required.
 					Returns a String of length 2-10.
 	************************************************************************************/
-	public String promptUserName() {
-		System.out.println("Please enter your name (2-10 characters): ");
-		String name = keyboard.nextLine();
+	public String promptUserName(String naming) {
+		System.out.println(naming);
+		String name = userInput();
 		while(name.length() < 2 || name.length() > 10){
-			showText("A valid name must be between 2 and 10 characters long.");
-			System.out.println("Please enter your name (2-10 characters): ");
-			name = keyboard.nextLine(); 
+			showText("INVALID NAME!\n"
+                 + "A valid name must be between 2 and 10 characters long.");
+			System.out.println(naming);
+			name = userInput(); 
 		}
 		return name;
 	}
@@ -98,7 +96,7 @@ public class Interface {
 		String input;
 		do {
 			System.out.println(string + " (y)es/(n)o");
-			input = keyboard.nextLine().toLowerCase();
+			input = userInput().toLowerCase();
 		}while(!(input.equals("y") || input.equals("n")));
 		return input.equals("y");
 	}
@@ -135,18 +133,21 @@ public class Interface {
 	* Out/post: Return a value that corresponds to the enumerated difficulty, 0 for 
 					normal, 1 for hard (i.e. the user's input minus one).
 	************************************************************************************/	
-	public int promptDifficulty() {
-		System.out.println("PLACEHOLDER_DIFFICULTY_1_2");
-		String input = keyboard.nextLine();
+	public int promptDifficulty(String difficultyText) {
+		System.out.println(difficultyText);
+		String input = userInput();
 		while(!(input.equals("1") || input.equals("2"))) {
 			showText("Invalid selection. Please select from one of the following options.");
 			System.out.println("PLACEHOLDER_DIFFICULTY_1_2");
-			input = keyboard.nextLine();
+			input = userInput();
 		}
 		return Integer.parseInt(input) - 1;
 	}
 	
-	public String promptPlayerMove(String[] colors, String moveOptions) {
+
+	
+	
+	public String promptPlayerMove(String[] colors, String moveOptions, String board) {
 	/************************************************************************************ 
 	* Prompt the user for a move during gameplay. Valid responses by the user are:
 			i:   A sequence of 4-5 characters corresponding to the 6-7 valid colors.
@@ -160,12 +161,12 @@ public class Interface {
 			of the current game.
 	* Out/post: Returns a string which represents the player's move for their current turn.
 	************************************************************************************/
-		System.out.println(moveOptions);
-		String input = keyboard.nextLine().toUpperCase();
+		System.out.println(board + " " + moveOptions);
+		String input = userInput().toUpperCase();
 		while(!(isMoveValid(input, colors))) {
 			showText("Invalid move!");
 			System.out.println(moveOptions);
-			input = keyboard.nextLine().toUpperCase();		
+			input = userInput().toUpperCase();		
 		}
 		return input;
 	}
@@ -186,10 +187,10 @@ public class Interface {
 																			to the stringBuffer */
 		}
 		String validColors = colorsFirstChars.toString();
-		System.out.println(validColors);
+		
 		//Checks for the three non-guess options.
-		if(move.equals("give up") || move.equals("hint") 
-											 || move.equals("instructions")) {
+		if(move.equals("GIVE UP") || move.equals("HINT") 
+											 || move.equals("INSTRUCTIONS")) {
 			return true;
 		}
 		
@@ -216,7 +217,16 @@ public class Interface {
 	
 	
 	public void pushUp() {
-		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n" 
+							+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+							+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+							+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	}
+	
+		
+	public String userInput() {
+		System.out.print(" >");
+		return keyboard.nextLine();
 	}
 	
 }
