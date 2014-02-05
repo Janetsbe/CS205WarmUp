@@ -8,16 +8,30 @@ class Computer {
 	private int difficulty;
 	private int turnsUsed;
 	private String feedback;
-	private boolean hintUsed;
+	private String currGuess;
 	private StringBuffer gameboard;
 	private String[] currPegOrder;
+	private String hint;
+	private boolean hintUsed;
 	
 	public Computer(int d){
 		difficulty = d;
 		pegOrder = "";
 		calcPegOrder();
+		hint = "?";
+		gameboard = GameText.getGameBoard(d, hint);
+		currPegOrder = new String[4+d];
+		currGuess = "";
 		feedback = "";
-		gameboard = GameText.getGameBoard(d);
+		hintUsed = false;
+		
+		for (int i = 0; i < currPegOrder.length; i++){
+			currPegOrder[i] = "S";
+			currGuess += "_";
+			feedback += "_";
+		}
+
+		
 	}
 	
 	//Generates the answer to the game
@@ -39,7 +53,7 @@ class Computer {
 	public boolean getHintUsed(){
 		return hintUsed;
 	}
-	
+
 	//All get functions
 	public String getPegOrder(){
 		return pegOrder;		
@@ -63,6 +77,7 @@ class Computer {
 	}
 	
 	public boolean scoreGuess(String userGuess){
+		currGuess = userGuess;
 		boolean check = true;
 		feedback = "";
 		String zeros = "";
@@ -78,7 +93,6 @@ class Computer {
 				check = false;
 				wrongPegs.add(guessArray[i]);
 				key.add(pegOrderArray[i]);
-				System.out.println("check was set to false");
 			}
 			else {
 				rightPegs.add(guessArray[i]);
@@ -106,16 +120,15 @@ class Computer {
 		
 		currPegOrder = guessArray;
 		turnsUsed++; // 3.
-		System.out.println(userGuess + " + " + feedback);
-		gameboard = GameText.setGameBoard(turnsUsed, userGuess, feedback, check, gameboard);
+		gameboard = GameText.setGameBoard(turnsUsed, userGuess, feedback, gameboard, hint);
 		return check; // 5.
 		
 	}
 	
 
-	public String giveHint(){
+	public void revealHint(){
 		ArrayList<String> hints = new ArrayList<String>();
-		String strColor;
+
 		for (int i = 0; i < pegOrder.length(); i++){
 			if (!currPegOrder[i].equals(strToStrArray(pegOrder)[i])){
 				hints.add(strToStrArray(pegOrder)[i]);
@@ -123,14 +136,16 @@ class Computer {
 		}
 		
 		if (hints.size() == 1){
-			strColor = hints.get(0);
+			hint = hints.get(0);
 		}
 		else{
 			int randHint = (int)(Math.random()*(hints.size()-1));
-			strColor =  hints.get(randHint);
+			hint =  hints.get(randHint);
 		}
+		gameboard = GameText.setGameBoard(turnsUsed, currGuess, feedback, gameboard, hint);
 		setHintUsed();
-		return trueColors[Arrays.asList(abbrColors).indexOf(strColor)]; 
+//		return trueColors[Arrays.asList(abbrColors).indexOf(strColor)]; 
+
 	}
 	
 	public String[] getTrueValidColors() {
@@ -155,6 +170,9 @@ class Computer {
 	public String getFeedback(){
 		return feedback;
 	}
+	
+	
+	
 	
 	
 	

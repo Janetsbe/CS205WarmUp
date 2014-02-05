@@ -1,9 +1,21 @@
 import java.util.Scanner;
 
+
+/******************************************************************************************
+* Project: Mastermind
+* File:    Interface.java
+* Author:  Joey Anetsberger
+* 
+* Description:
+* 		This class handles all connections between the user and the game itself.
+*		Any time input is required or output is sent to the console, it is done
+*		through this class. Input validation is also performed here.
+*/
+
 public class Interface {
 
 	private Scanner keyboard; //Used for user input
-	
+	private static final int MAIN_MENU_OPTION_MAX_LENGTH = 2;
 	
 	/************************************************************************************ 
 	* Constructor for interface Object.
@@ -24,9 +36,12 @@ public class Interface {
 	public int promptMainMenu(String mainMenu) {
 		System.out.println(mainMenu);
 		String input = userInput();
-
-		while(!isNumerical(input)) {
+		
+		//loops until value is numerical and not too large (prevent int overflow)
+		while(input.length() > MAIN_MENU_OPTION_MAX_LENGTH || !isNumerical(input)) {
+			pushUp();
 			showText("Please select a valid option from the menu.");
+			pushUp();
 			System.out.println(mainMenu);
 			input = userInput();
 		}
@@ -73,11 +88,14 @@ public class Interface {
 					Returns a String of length 2-10.
 	************************************************************************************/
 	public String promptUserName(String naming) {
+		pushUp();
 		System.out.println(naming);
 		String name = userInput();
 		while(name.length() < 2 || name.length() > 10){
+			pushUp();
 			showText("INVALID NAME!\n"
                  + "A valid name must be between 2 and 10 characters long.");
+			pushUp();
 			System.out.println(naming);
 			name = userInput(); 
 		}
@@ -86,8 +104,8 @@ public class Interface {
 
 	
 	/************************************************************************************ 
-	* Prompts the user to confirm a choice. User must enter "y" for yes, or "n" for no,
-   * as is indicated by console output.
+	* This group of methods are responsible for prompts to the user to confirm a choice. 
+	* User must enter "y" for yes, or "n" for no, as is indicated by console output.
 	* In: String representing the question needing confirmation.
 	* Out/post: User is asked if they are sure and is given the valid responses. 
 	* `			Returns a boolean, true if user says yes, false if no.
@@ -95,32 +113,22 @@ public class Interface {
 	public boolean isSure(String string) {
 		String input;
 		do {
+			pushUp();
 			System.out.println(string + " (y)es/(n)o");
 			input = userInput().toLowerCase();
 		}while(!(input.equals("y") || input.equals("n")));
 		return input.equals("y");
 	}
-	
 	public boolean confirmRename() {
 		return isSure("New player?\n"
 							+ "WARNING: This will reset your stats!");
 	}
-	
 	public boolean promptGiveUp() {
 		return isSure("Do you wish to forfeit the game?");
 	}
-	
-	
 	public boolean promptPlayAgain() {
 		return isSure("Do you wish you play again?");
 	}
-	
-	/************************************************************************************ 
-	* Asks the user if they would like to quit.
-	* In: None
-	* Out/post: User is asked if they want to exit.
-					Returns a boolean equal to return from isSure().
-	************************************************************************************/
 	public boolean promptWantsToQuit() {
 		return isSure("Exit the game?");
 	}
@@ -138,7 +146,7 @@ public class Interface {
 		String input = userInput();
 		while(!(input.equals("1") || input.equals("2"))) {
 			showText("Invalid selection. Please select from one of the following options.");
-			System.out.println("PLACEHOLDER_DIFFICULTY_1_2");
+			System.out.println(difficultyText);
 			input = userInput();
 		}
 		return Integer.parseInt(input) - 1;
@@ -146,30 +154,32 @@ public class Interface {
 	
 
 	
-	
-	public String promptPlayerMove(String[] colors, String moveOptions, String board) {
 	/************************************************************************************ 
 	* Prompt the user for a move during gameplay. Valid responses by the user are:
-			i:   A sequence of 4-5 characters corresponding to the 6-7 valid colors.
-			     e.g. "rygb", or "yygr" (red yellow green blue, or yellow yellow green red).
-			ii:  "instructions"
-			iii: "hint"
-			iv:  "give up"
-	  Validity of input is checked here (within isMoveValid()), array of valid colors
-	  is passed in.
+	*		i:   A sequence of 4-5 characters corresponding to the 6-7 valid colors.
+	* 		     e.g. "rygb", or "yygr" (red yellow green blue, or yellow yellow green red).
+	*		ii:  "instructions"
+	*		iii: "hint"
+	*		iv:  "give up"
+	* Validity of input is checked here (within isMoveValid()), array of valid colors
+	* is passed in.
 	* In: an array of strings representing which colors are valid for the difficulty
-			of the current game.
+	*   	of the current game.
 	* Out/post: Returns a string which represents the player's move for their current turn.
-	************************************************************************************/
+	************************************************************************************/	
+	public String promptPlayerMove(String[] colors, String moveOptions, String board) {
 		System.out.println(board + " " + moveOptions);
 		String input = userInput().toUpperCase();
 		while(!(isMoveValid(input, colors))) {
+			pushUp();
 			showText("Invalid move!");
-			System.out.println(moveOptions);
+			pushUp();
+			System.out.println(board + " " + moveOptions);
 			input = userInput().toUpperCase();		
 		}
 		return input;
 	}
+	
 	
 	/************************************************************************************ 
 	* Verifies that a player's move is valid. That is, it must be either a valid string
@@ -190,22 +200,19 @@ public class Interface {
 		
 		//Checks for the three non-guess options.
 		if(move.equals("GIVE UP") || move.equals("HINT") 
-											 || move.equals("INSTRUCTIONS")) {
+										  || move.equals("INSTRUCTIONS")) {
 			return true;
 		}
-		
 		//Checks for validity of potential guess input.
 		if(move.length() != colors.length - 2) //6 colors => 4 pegs, 7 => 5
 			return false; //String is incorrect length to be a guess.
 			
-		for(int i = 0; i < move.length(); i++) {
-		 	if(validColors.indexOf(move.charAt(i)) == -1) /*Checks if all chars in 
+		for(int i = 0; i < move.length(); i++) { /*Checks if all chars in 
 																move are contained in validColors */
+		 	if(validColors.indexOf(move.charAt(i)) == -1) 
 				return false; //a char was found which doesn't correspond to a valid color.
 		}
-		
 		return true; //falls to here if input is a valid guess.
-			
 	}
 
 
@@ -216,23 +223,28 @@ public class Interface {
 	}
 	
 	
+	/************************************************************************************ 
+	* Pushes what is on the console screen up so that it is no longer visible to the user.
+   * Keeps the console looking clean and easy to read.
+	* In: None
+	* Out/post: Many newlines printed to console.
+	************************************************************************************/
 	public void pushUp() {
-		System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n" 
-							+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-							+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-							+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		System.out.println("\n\n\n\n\n\n\n\n\n\n\n" 
+							+"\n\n\n\n\n\n\n\n\n\n\n\n\n"
+							+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	}
 	
-		
+	/************************************************************************************ 
+	* Used when asking user for input, prints a > to indicate that user input is desired.
+	* In: None
+	* Out/post: Console output.
+	************************************************************************************/		
 	public String userInput() {
 		System.out.print(" >");
 		return keyboard.nextLine();
 	}
 	
 }
-	/************************************************************************************ 
-	*
-	* In: 
-	* Out/post: -
-	************************************************************************************/
+
 	

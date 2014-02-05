@@ -19,6 +19,7 @@ public class MastermindMain {
 	private static final int ABOUT = 4;
 	private static final int RESET_PLAYER = 5;
 	private static final int EXIT = 0;
+	private static final int TURNS_ALLOWED = 10;
 
 	public static void main(String[] args) {
 		
@@ -44,7 +45,7 @@ public class MastermindMain {
 				gameInterface.showInstructions(GameText.getInstructions());
 			}
 			else if(playerSelection == STATS) { //player wants to see gameplay stats
-				gameInterface.showText("STATS_PH");
+				gameInterface.showText(GameText.getStats(player));
 			}
 			else if(playerSelection == ABOUT) { //player wants to see the about text
 				gameInterface.showText(GameText.getAboutScreen());
@@ -83,23 +84,30 @@ public class MastermindMain {
 
 			boolean isGameDone = false;
 			while(!isGameDone) {
-				//Player is asked for a move. Function can only return 4 things.
 			gameInterface.pushUp();	
+			
+			//Player is asked for a move. Function can only return 4 things.
 			String input = gameInterface.promptPlayerMove(computer.getTrueValidColors(),
 													GameText.askMoveText(computer.getTrueValidColors()),
 													computer.getGameboard());
-				gameInterface.pushUp();
+			gameInterface.pushUp();
 				
 				//start of if branching depending on player's move. Exhaustive.
 				if(input.equalsIgnoreCase("hint")) {
-					gameInterface.showText("HINT_PH");
-					//gameInterface.showHint(computer.getHint());
+					if(!computer.getHintUsed()) {
+						computer.revealHint();
+					}
+					else {
+						gameInterface.showText("You may only ask for a hint ONCE!");
+					}
 				}//if
-				else if(input.equalsIgnoreCase("give up")
-												 && gameInterface.promptGiveUp()) {	 
-					isGameDone = true;
-					gameInterface.showText(GameText.getLoseScreen());
-					gameInterface.showText("The solution was: " + computer.getPegOrder());
+				else if(input.equalsIgnoreCase("give up")) {
+					if(gameInterface.promptGiveUp()) {	 
+						isGameDone = true;
+						gameInterface.showText(GameText.getLoseScreen());
+						gameInterface.showText("The solution was: " + computer.getPegOrder());
+						player.updateStats(0, computer.getTurnsUsed(), computer.getDifficulty());
+					}//if
 				}//else if
 				else if(input.equalsIgnoreCase("instructions")) {
 					gameInterface.showInstructions(GameText.getInstructions());
@@ -112,8 +120,8 @@ public class MastermindMain {
 						isGameDone = true;
 					}//if
 					else {//goes to here if the guess is not a win.
-						if(computer.getTurnsUsed() >= 10) { // Lose
-							
+						if(computer.getTurnsUsed() >= TURNS_ALLOWED) { // Lose
+							player.updateStats(0, computer.getTurnsUsed(), computer.getDifficulty());
 							gameInterface.showText(GameText.getLoseScreen());
 							gameInterface.showText("The solution was: " + computer.getPegOrder());
 							isGameDone = true;

@@ -146,7 +146,7 @@ public class GameText{
                                     "*   G u e s s   * Score *\n"+
                                     "*************************\n";
                                     
-   public static StringBuffer getGameBoard(int difficulty){
+   public static StringBuffer getGameBoard(int difficulty, String hint){
       StringBuffer gBStr = new StringBuffer();
       gBStr.append(boardTop);
       String[] guessArray;
@@ -162,7 +162,7 @@ public class GameText{
          
          }
          String gBAnswer = "*   # # # # #   *";
-         String gBClue = " __?__ *\n";
+         String gBClue = " __" + hint + "__ *\n";
          String gBFoot = "*************************\n"+
                       "*    ANSWER     *  HINT *\n"+ 
                       gBAnswer + gBClue+
@@ -190,7 +190,8 @@ public class GameText{
    return gBStr; 
    }
 
-	public static StringBuffer setGameBoard(int turn, String guessInput, String scoreInput, boolean winOrLose, StringBuffer gBStr){
+	public static StringBuffer setGameBoard(int turn, String guessInput, String scoreInput, StringBuffer gBStr, 
+																String clueInsert){
       int CONSTANT_COUNT = 130;
       
       String guess = guessInput;
@@ -199,9 +200,24 @@ public class GameText{
 			guessInput += guess.charAt(i) + " ";
 		}		
 		guessInput = guessInput.substring(0, guessInput.length() - 1);
-
+		if(!clueInsert.equals("?")){
+         if (guessInput.length() == 9){
+            int clueLocation = CONSTANT_COUNT + 332;
+           gBStr.replace(clueLocation, clueLocation+1,clueInsert);
+         }
+         else {
+            int clueLocation = CONSTANT_COUNT + 332;
+            gBStr.replace(clueLocation, clueLocation+1,clueInsert);
+         }
+      }
       if (guessInput.length() == 9){
-         int charLocationStart = CONSTANT_COUNT + (turn-1)*26;
+			int charLocationStart = 0;
+			if (turn == 0){
+	         charLocationStart = CONSTANT_COUNT + (turn)*26;
+			}
+			else{
+         	charLocationStart = CONSTANT_COUNT + (turn-1)*26;
+			}
          if ( turn == 1){
          }
          else{
@@ -211,7 +227,13 @@ public class GameText{
          gBStr.replace(charLocationStart, charLocationStart + 25, guessStr+scoreStr);
       }
       else if ( guessInput.length() == 7){
-         int charLocationStart = CONSTANT_COUNT + (turn-1)*26;
+			int charLocationStart = 0;
+			if (turn == 0){
+	         charLocationStart = CONSTANT_COUNT + (turn)*26;
+			}
+			else{
+         	charLocationStart = CONSTANT_COUNT + (turn-1)*26;
+			}
          String guessStr = "*   "+guessInput+"    **";
          String scoreStr = " "+scoreInput+" **";
          gBStr.replace(charLocationStart, charLocationStart + 25, guessStr+scoreStr);
@@ -256,7 +278,29 @@ public class GameText{
       askMoveString = askMoveStringBuffer.toString();
       
       return "Please make your move. Enter " + (colorArray.length - 2) + 
-		" letters representing colors from:\n" +askMoveString+
-      ".\nAlso, you may ask for a (hint), (instructions), or (give up).";
+		" letters representing colors from:\n " +askMoveString+
+      "\n You may also ask for a (hint), get (instructions), or (give up).";
    }
-}
+public static String getStats(Player player){
+      String playerStr = player.getPlayerName();
+		
+      int[] totalGamesArray = player.getGamesPlayed();
+      int[] totalWinsArray = player.getTotalWins();
+      int[] totalTurnsArray = player.getTotalTurns();
+      int[] totelLosesArray = player.getTotalLosses();
+      int[] turnsWinsRatioArray = player.getTurnsWinsRatio();
+      
+      String sessionStats = "||**********Player's Stats**********||\n||\n"+
+                           "|| Player: "+playerStr+"\n"+
+                           "||\n" +
+									"||                      Easy | Hard \n" +
+									"|| Games Played:"+String.format("%12d | %d", totalGamesArray[0], totalGamesArray[1])+"\n"+
+                           "|| Wins:"+String.format("%20d | %d", totalWinsArray[0], totalWinsArray[1])+"\n"+ 
+									"|| Losses:"+String.format("%18d | %d", totelLosesArray[0], totelLosesArray[1])+"\n"+
+                           "|| Total Turns:"+String.format("%13d | %d", totalTurnsArray[0], totalTurnsArray[1])+"\n"+
+									"|| Turn/Win Average:"+String.format("%8d | %d", turnsWinsRatioArray[0], turnsWinsRatioArray[1])+"\n"+
+									"||**********************************||";
+		 return sessionStats;
+   
+   }
+} 
